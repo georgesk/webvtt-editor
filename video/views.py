@@ -107,3 +107,11 @@ def listClasse(request):
     return JsonResponse({
         "eleves": "<br/>".join(eleves),
     })
+
+def delClasse(request):
+    c=request.GET.get("classe")
+    etudiants=Etudiant.objects.filter(classe=c)
+    etudiants.delete()
+    return JsonResponse({
+        "status": "ok",
+    })
