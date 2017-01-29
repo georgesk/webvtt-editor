@@ -19,10 +19,11 @@ from django.conf import settings
 from django.contrib.staticfiles import views
 import django.contrib.auth.views
 
-from video import home
+from video import home, preparation
 
 urlpatterns = [
     url(r'^$', home.index, name='home'),
+    url(r'^preparation/$', preparation.index, name='preparation'),
     url(r'^admin/', admin.site.urls),
     url(r'^login/$', django.contrib.auth.views.login, name='login'),
     url(r'^logout/$', django.contrib.auth.views.logout, {'next_page': '/login'}),
