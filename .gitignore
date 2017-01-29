@@ -90,3 +90,6 @@ ENV/
 
 # current database
 db.sqlite3
+
+# medias
+medias/

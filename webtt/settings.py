@@ -163,3 +163,9 @@ LDAP_AUTH_USER_LOOKUP_FIELDS = ("username",)
 # Override this to set custom field formatting for your
 # user model.
 LDAP_AUTH_CLEAN_USER_DATA = django_python3_ldap.utils.clean_user_data
+
+##########################"" medias #######################"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'medias')
+
+MEDIA_URL = '/medias/'

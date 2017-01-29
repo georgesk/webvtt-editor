@@ -38,7 +38,33 @@ class EnseignantClasse(models.Model):
 
     enseignant = models.ForeignKey(Enseignant)
     classe= models.CharField(max_length=50)
-    gid = models.IntegerField()
+    gid = models.IntegerField() ## groupe ldap de la classe
 
     def __str__(self):
         return "{} -> {}".format(self.enseignant.nom, self.classe)
+
+class Atelier(models.Model):
+    """
+    associe une vidéo et peut-être des sous-titres à une classe et un prof
+    """
+    ec =  models.ForeignKey(EnseignantClasse)
+    video = models.FileField(upload_to='video')
+    tt    = models.TextField(default="WEBTT\n\n")
+
+    def __str__(self):
+        return "{} {} {}".format(self.ec, self.video, self.tt[:20]+"...")
+
+class Travail(models.Model):
+    """
+    décrit le travail d'un élève dans un atelier
+    """
+    atelier=models.ForeignKey(Atelier)
+    tt = models.TextField()
+    etudiant=models.ForeignKey(Etudiant)
+
+    def __str__(self):
+        return "{} {} {}".format(self.etudiant,
+                                 self.tt[:30]+"...",
+                                 self.atelier)
+
+    
