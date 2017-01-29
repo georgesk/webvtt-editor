@@ -1,0 +1,70 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>WebTT : ajout d'élèves</title>
+    <link rel="stylesheet" href="/static/video/css/video.css" type="text/css"/>
+    <link rel="stylesheet" href="/static/video/js/jquery-ui/themes/smoothness/jquery-ui.css" type="text/css"/>
+    <script type="text/javascript" src="/static/video/js/jquery/jquery.js">
+    </script>
+    <script type="text/javascript" src="/static/video/js/jquery-ui/jquery-ui.js">
+    </script>
+    <script type="text/javascript" src="/static/video/js/addEleves.js">
+    </script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $( "#accordeon" ).accordion({
+          collapsible: true,
+	  active: -1,
+	});
+      });
+    </script>
+  </head>
+  <body>
+    {% if user.is_superuser %}
+    <h1>WebTT : ajout d'élèves</h1>
+    <ul>
+      <li><a href="/admin/">Administration.</a></li>
+      <li><a href="/preparation/">Préparation des cours, formations, groupes, etc.</a></li>
+    </ul>
+   <div id="accordeon">
+      {% if eleves %}
+      <h2>{{ eleves|length }} élèves ont été ajoutés </h2>
+      <table style="joli">
+	<tr><th>Classe</th><th>Nom</th><th>Prénom</th><th>Uid</th></tr>
+	{% for e in eleves %}
+	<tr><td>{{e.classe}}</td><td>{{e.nom}}</td><td>{{e.prenom}}</td><td>{{e.uid}}</td></tr>
+	{% endfor %}
+      </table>
+      {% endif %}
+      <h2>Nouvelles classes à ajouter </h2>
+      <form method="post" action="#">
+	<fieldset class="joli">
+	  <legend>Choisissez une ou <br/>plusieurs classes ci-dessous :</legend>
+	  {% csrf_token %}
+	  <div style="float:left; width:25%;">
+	    <select name="classes" multiple="multiple" style="height: 30ex;">
+	      {% for option in classes %}
+	      <option value="{{option.gid}}">{{option.classe}}</option>
+	      {% endfor %}
+	    </select><br/>
+	    <input type="submit" value="Ajouter les élèves"/>
+	  </div>
+	  <div style="float:right; width:70%;">
+	    {% if classesDansDb %}
+	    <h3 style="text-align: center;">Classes déjà importées</h3>
+	    {% endif %}
+	    {% for c in classesDansDb %}
+	    <div class="classeConnue">
+	      <h3>{{c}}</h3>
+	      <button type="button" onclick="voirClasse('{{c}}')">Voir</button><br/>
+	      <button type="button" onclick="effacerClasse('{{c}}')">Effacer</button>
+	    </div>
+	    {% endfor %}
+	  </div>
+	</fieldset>
+      </form>
+    </div>
+    <div id="dialog">
+    </div>
+    {% endif %}
+  </body>
+</html>

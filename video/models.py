@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 
-class Etudiant:
+class Etudiant(models.Model):
     """
     Représente un étudiant qui peut "sous-titrer". Les champs "uidNumber" et
     "uid" identifient l'étudiant dans l'annuaire LDAP de 
@@ -18,7 +18,7 @@ class Etudiant:
         return "{nom} {prenom} {classe} {uid}".format(**self.__dict__)
     
 
-class Enseignant:
+class Enseignant(models.Model):
     """
     Désigne un professeur ou un autre membre de l'équipe éducative.
     le champ "uid" correspond à l'identifiant de ce professeur dans 
