@@ -24,12 +24,26 @@
     </script>
     {% endblock %}
     {% block customjs %}
+    <script type="text/javascript" src="/static/video/js/mediaelement/mediaelement-and-player.js"></script>
     <script type="text/javascript" src="/static/video/js/video.js">
     </script>
     {% endblock %}
 
     {% block style %}
     <link rel="stylesheet" type="text/css" href="/static/video/css/video.css"/>
+    <link rel="stylesheet" href="/static/video/js/mediaelement/mediaelementplayer.min.css" />
+    <style type="text/css">
+      .mejs-captions-text{
+      color: black;
+      text-shadow:
+      white 1px 1px,
+      lightcyan -1px 1px,
+      white -1px -1px,
+      white 1px -1px;
+      font-size: 40px;
+      background: rgba(20,20,20,0.25);
+      }
+    </style>
     {% endblock %}
   </head>
   <body>
@@ -72,6 +86,20 @@
       {% else %}
       ({{etudiant.prenom}} {{etudiant.nom}}, {{etudiant.classe}})
       {% endif %}
+      <ol>
+	{% for t in travaux %}
+	<li>
+	  <video  width="160" height="120" 
+		  class="mejs-player" 
+		  controls="controls"
+		  preload="auto"
+		  >
+	    <source src="/medias/{{t.atelier.video}}" />
+	  </video>
+	  <a href="/video/sousTitre/{{t.pk}}">Travailler sur les sous-titre</a>
+	</li>
+	{% endfor %}
+      </ol>
     </h2>
     <input type="hidden" id="etudiantUid" value="{{etudiant.uid}}"/>
     <!-- end main block -->

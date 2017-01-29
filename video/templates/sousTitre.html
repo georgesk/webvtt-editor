@@ -9,24 +9,6 @@
     <script type="text/javascript" src="/static/video/js/sous-titre.js">
     </script>
     {% endblock %}
-
-    {% block style %}
-    <link rel="stylesheet" type="text/css" href="/static/video/css/video.css"/>
-    <link rel="stylesheet" href="/static/video/js/mediaelement/mediaelementplayer.min.css" />
-    <style type="text/css">
-      .mejs-captions-text{
-      color: black;
-      text-shadow:
-      white 1px 1px,
-      lightcyan -1px 1px,
-      white -1px -1px,
-      white 1px -1px;
-      font-size: 40px;
-      background: rgba(20,20,20,0.25);
-      }
-    </style>
-    
-    {% endblock %}
   </head>
   <body>
     {% if user.is_authenticated %}

@@ -5,9 +5,14 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.hashers import *
 
-from .models import Etudiant, Enseignant
+from .models import Etudiant, Enseignant, Travail
 from .ldapUtils import estProfesseur
 
 
 def index(request):
-    return render(request, "home.html")
+    etudiant=Etudiant.objects.filter(uid=request.user)[0]
+    travaux=Travail.objects.filter(etudiant=etudiant)
+    return render(request, "home.html",context={
+        "etudiant": etudiant,
+        "travaux": travaux,
+    })
