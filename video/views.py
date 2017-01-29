@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
-import json
+import json, os.path
 
-from .models import Etudiant, Enseignant, EnseignantClasse
+from webtt.settings import MEDIA_URL, MEDIA_ROOT
+
+from .models import Etudiant, Enseignant, EnseignantClasse, Travail, \
+    Atelier
 #from .csvResult import csvResponse
 #from .odfResult import odsResponse, odtResponse
 from collections import OrderedDict
@@ -136,3 +139,60 @@ def profClasse(request):
         return JsonResponse({
             "status": "ok",
         });
+
+def sousTitre(request, travail_id):
+    """
+    appel par /video/sousTitre/id, où id est l'identifiant d'un
+    objet Travail. Permet de travailler le sous-titrage de la vidéo
+    associée au travail.
+    """
+    t=Travail.objects.filter(pk=int(travail_id))
+    if t:
+        uniqueId=t[0].pk
+        fileName=MEDIA_ROOT+"/tt/"+str(uniqueId)+".vtt"
+        with open(fileName, "w") as outfile:
+            outfile.write(t[0].tt)
+        return render(request,"sousTitre.html",
+                      context={
+                          "video": MEDIA_URL + str(t[0].atelier.video),
+                          "tt": t[0].tt,
+                          "uniqueId": uniqueId,
+                      })
+    else:
+        return HttpResponse("<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8' /></head><body>Page non trouvée</body></html>", content_type="text/html")
+
+
+def setTextarea(request):
+    """
+    renvoie des données pour les écrire dans le textarea des sous-titres
+    """
+    uid=request.GET.get("uid")
+    fileName=MEDIA_ROOT+"/tt/"+uid+".vtt"
+    with open(fileName, "r") as infile:
+        data= infile.read()
+    ## data+="\n\n1\n00:00:12:000 -> 00:00:18:000\nGRRRR"
+    return JsonResponse({
+        "txt": data
+    })
+
+def saveTextarea(request):
+    """
+    enregistre les lignes du textarea dans le fichier de travail
+    """
+    uid= request.POST.get("uid")
+    txt= request.POST.get("txt")
+    fileName=MEDIA_ROOT+"/tt/"+uid+".vtt"
+    t=Travail.objects.filter(pk=int(uid))
+    print("GRRRR t=",t)
+    if t:
+        t[0].tt=txt
+        t[0].save()
+        print("GRRRR sauvegardé", txt)
+    with open(fileName, "w") as outfile:
+        outfile.write(txt)
+    return JsonResponse({
+        "status": "ok"
+    })
+    
+    
+    

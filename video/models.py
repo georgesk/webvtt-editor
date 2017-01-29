@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
@@ -59,12 +60,26 @@ class Travail(models.Model):
     décrit le travail d'un élève dans un atelier
     """
     atelier=models.ForeignKey(Atelier)
-    tt = models.TextField()
+    tt = models.TextField(default="", blank=True)
     etudiant=models.ForeignKey(Etudiant)
 
+    class Meta:
+        verbose_name_plural = "Travaux"
+
+            
     def __str__(self):
         return "{} {} {}".format(self.etudiant,
                                  self.tt[:30]+"...",
                                  self.atelier)
 
+    def clean(self, *args, **kwargs):
+        if self.etudiant.classe != self.atelier.ec.classe:
+            raise (ValidationError("Erreur de classe entre l'élève et l'atelier"))
+        super(Travail, self).clean(*args, **kwargs)
+        return
     
+    def save(self, *args, **kwargs):
+        if not self.tt:
+            self.tt=self.atelier.tt
+        super(Travail, self).save(*args, **kwargs)
+        return

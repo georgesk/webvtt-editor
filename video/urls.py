@@ -11,4 +11,7 @@ urlpatterns = [
     url(r'^listClasse$', views.listClasse, name='listClasse'),
     url(r'^delClasse$', views.delClasse, name='delClasse'),
     url(r'^profClasse$', views.profClasse, name='profClasse'),
+    url(r'^sousTitre/(?P<travail_id>[0-9]+)$', views.sousTitre, name='sousTitre'),
+    url(r'^setTextarea$', views.setTextarea, name='setTextarea'),
+    url(r'^saveTextarea$', views.saveTextarea, name='saveTextarea'),
 ]

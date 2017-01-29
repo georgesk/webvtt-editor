@@ -1,0 +1,92 @@
+{% extends "home.html" %}
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    {% block title %}
+    <title>WebTT : sous-titrer une vidéo</title>
+    {% endblock %}
+    {% block customjs %}
+    <script type="text/javascript" src="/static/video/js/mediaelement/mediaelement-and-player.js"></script>
+    <script type="text/javascript" src="/static/video/js/sous-titre.js">
+    </script>
+    {% endblock %}
+
+    {% block style %}
+    <link rel="stylesheet" type="text/css" href="/static/video/css/video.css"/>
+    <link rel="stylesheet" href="/static/video/js/mediaelement/mediaelementplayer.min.css" />
+    <style type="text/css">
+      .mejs-captions-text{
+      color: black;
+      text-shadow:
+      white 1px 1px,
+      lightcyan -1px 1px,
+      white -1px -1px,
+      white 1px -1px;
+      font-size: 40px;
+      background: rgba(20,20,20,0.25);
+      }
+    </style>
+    
+    {% endblock %}
+  </head>
+  <body>
+    {% if user.is_authenticated %}
+    <div id="userinfo">
+      <h3>
+	{% block welcome %}
+	Bienvenue {{user.first_name}} {{user.last_name}}
+	{% ifequal estprof "prof" %}
+	<br/><span class="remark">professeur (pas pour ce groupe Vidéo)</span>
+	{% else %}
+	{% ifequal estprof "profAP" %}
+	<br/><span class="remark">professeur (dans ce groupe Video)</span>
+	{% endifequal %}
+	{% endifequal %}
+	<br/><span class="remark">Cliquer pour les options ↡</span>
+      </h3>
+      <ul class="dropdownOptions">
+	{% block localoptions %}
+	{% if user.is_superuser %}
+	<li><a href="/admin/">Administration.</a></li>
+	<li><a href="/preparation/">Préparation des vidéos, groupes, etc.</a></li>
+	{% endif %}
+	{% ifequal estprof "profAP" %}
+	<li><a href="/votes/lesCours?uid={{username}}">Voir <b>mes cours</b> vidéo et les élèves inscrits.</a></li>
+	{% endifequal %}
+	{% endblock %}
+	<!-- dernière option : la déconnexion -->
+	<li><a href="/logout/">Déconnexion</a></li>
+	{% endblock %}
+      </ul>
+    </div>
+    <div style="clear:both"/>
+    {% block main %}
+    <input type="hidden" id="uniqueId" value="{{uniqueId}}" />
+    {% csrf_token %}
+    <h1>..:: Sous-titrage de vidéo ::..</h1>
+    <table id="videoEtTT">
+      <tr>
+	<td>
+	  <video  width="640" height="480" 
+		  class="mejs-player" 
+		  controls="controls"
+		  preload="auto"
+		  data-mejsoptions='{
+		  "startLanguage": "fr",
+		  }'>
+	    <source src="{{video}}" />
+	    <track src="/medias/tt/{{uniqueId}}.vtt" kind="subtitles" srclang="fr" label="Français" />
+	  </video>
+	</td>
+	<td>
+	  <textarea id="tt" rows="15" cols="40">{{tt}}</textarea>
+	  <br/>
+	  <input type="button" onclick="saveTextarea({{uniqueId}})" value="Mise à jour des sous-titres" />
+	</td>
+      </tr>
+    </table>
+    <!-- end main block -->
+    {% endblock %}
+    <!-- end "if authenticated" -->
+    {% endif %}
+  </body>
+</html>

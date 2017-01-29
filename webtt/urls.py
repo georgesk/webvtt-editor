@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.contrib.staticfiles import views
 import django.contrib.auth.views
+from django.conf.urls.static import  static
 
 from video import home, preparation
 
@@ -29,6 +30,8 @@ urlpatterns = [
     url(r'^logout/$', django.contrib.auth.views.logout, {'next_page': '/login'}),
     url(r'^video/', include('video.urls')),
 ]
+
+urlpatterns+=static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     urlpatterns += [
