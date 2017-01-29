@@ -28,3 +28,8 @@ urlpatterns = [
     url(r'^logout/$', django.contrib.auth.views.logout, {'next_page': '/login'}),
     url(r'^video/', include('video.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        url(r'^static/(?P<path>.*)$', views.serve),
+    ]

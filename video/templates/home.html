@@ -1,0 +1,79 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    {% block title %}
+    <title>WebTT : sous-titrer des vidéos</title>
+    {% endblock %}
+    {% block jquery %}
+    <script type="text/javascript" src="/static/video/js/jquery/jquery.js">
+    </script>
+    <script type="text/javascript" src="/static/video/js/jquery-ui/jquery-ui.js">
+    </script>
+    <link rel="stylesheet" type="text/css" href="/static/video/js/jquery-ui/css/smoothness/jquery-ui.css"/>
+    {% endblock %}
+    {% block onload %}
+    <script type="text/javascript">
+      $( function() { // lancement après le chargement
+      $( "#userinfo" ).accordion({
+      collapsible: true,
+      active: false,
+      });
+      } );
+    </script>
+    {% endblock %}
+    {% block customjs %}
+    <script type="text/javascript" src="/static/video/js/video.js">
+    </script>
+    {% endblock %}
+
+    {% block style %}
+    <link rel="stylesheet" type="text/css" href="/static/video/css/video.css"/>
+    {% endblock %}
+  </head>
+  <body>
+    {% if user.is_authenticated %}
+    <div id="userinfo">
+      <h3>
+	{% block welcome %}
+	Bienvenue {{user.first_name}} {{user.last_name}}
+	{% ifequal estprof "prof" %}
+	<br/><span class="remark">professeur (pas pour ce groupe Vidéo)</span>
+	{% else %}
+	{% ifequal estprof "profAP" %}
+	<br/><span class="remark">professeur (dans ce groupe Video)</span>
+	{% endifequal %}
+	{% endifequal %}
+	<br/><span class="remark">Cliquer pour les options ↡</span>
+      </h3>
+      <ul class="dropdownOptions">
+	{% block localoptions %}
+	{% if user.is_superuser %}
+	<li><a href="/admin/">Administration.</a></li>
+	<li><a href="/preparation/">Préparation des vidéos, groupes, etc.</a></li>
+	{% endif %}
+	{% ifequal estprof "profAP" %}
+	<li><a href="/votes/lesCours?uid={{username}}">Voir <b>mes cours</b> vidéo et les élèves inscrits.</a></li>
+	{% endifequal %}
+	{% endblock %}
+	<!-- dernière option : la déconnexion -->
+	<li><a href="/logout/">Déconnexion</a></li>
+	{% endblock %}
+      </ul>
+    </div>
+    <div style="clear:both"/>
+    {% block main %}
+    <h1>..:: WebTT Lycée Jean Bart ::.. ..:: sous-titrage de vidéos ::..</h1>
+    <h2>
+      Vidéos disponibles
+      {% if etudiant == None %}
+      (vous n'êtes pas étudiant(e))
+      {% else %}
+      ({{etudiant.prenom}} {{etudiant.nom}}, {{etudiant.classe}})
+      {% endif %}
+    </h2>
+    <input type="hidden" id="etudiantUid" value="{{etudiant.uid}}"/>
+    <!-- end main block -->
+    {% endblock %}
+    <!-- end "if authenticated" -->
+    {% endif %}
+  </body>
+</html>

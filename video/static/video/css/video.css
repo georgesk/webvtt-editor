@@ -1,0 +1,173 @@
+body{
+    padding-bottom: 50 px; /* permet de placer les boutons (fixed) */
+}
+fieldset.joli {
+    background:    yellow;
+    border:        1px navy solid;
+    border-radius: 5px;
+    padding:       10px;
+    display:       inline-block;
+}
+
+fieldset.joli legend {
+    background:    gold;
+    border:        2px navy solid;
+    border-radius: 5px;
+    padding:       5px;
+}
+
+table.joli {
+    border-collapse: collapse;
+}
+
+table.joli, th, td {
+    border: 1px navy solid;
+    background: lightyellow;
+}
+
+.profAcocher {
+    display: inline-flex;
+    background: wheat;
+    padding: 0.5ex;
+    border: 1px orange solid;
+    border-radius: 0.5ex;
+    margin-right: 1em;
+    margin-bottom: 0.5ex;
+}
+
+#profAvalider{
+    position: fixed;
+    top : 20px;
+    right: 20px;
+    background: wheat;
+}
+
+#profAvalider input {
+    font-size: 160%;
+    background: wheat;
+}
+
+input[disabled].btn:hover, input[disabled].btn:active, input[disabled].btn:focus{
+   color: green;
+   background: white;						   
+}
+
+#userinfo {
+    float:right;
+    margin-rigth: 10px;
+    margin-top: 10px;
+    width: 15em;
+}
+
+.ui-accordion-header{
+    z-index:30;
+}
+
+#inscription_boutons {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: moccasin;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px;
+    box-shadow: 0px 0px 8px 4px #666;
+    z-index: 25;
+}
+
+/**
+ * tour circulaires des
+ * boutons à cocher
+ **/
+.jolicb {
+    width: 30px;
+    height: 30px;
+    background: #557;
+    margin: 5px;
+    border-radius: 100%;
+    position: relative;
+    -webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+    -moz-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+    box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+}
+
+.jolicb input[type=checkbox]{
+    margin: 10px;
+}
+
+
+
+/**
+ * Le bouton à cocher lui-même est recouvert par le label, circulaire
+ */
+
+.jolicb label {
+    display: block;
+    width: 24px;
+    height: 24px;
+    border-radius: 100px;
+    -webkit-transition: all .5s ease;
+    -moz-transition: all .5s ease;
+    -o-transition: all .5s ease;
+    -ms-transition: all .5s ease;
+    transition: all .5s ease;
+    cursor: pointer;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    z-index: 10;
+    background: #533;
+    -webkit-box-shadow:inset 0px 1px 3px rgba(0,0,0,0.5);
+    -moz-box-shadow:inset 0px 1px 3px rgba(0,0,0,0.5);
+    box-shadow:inset 0px 1px 3px rgba(0,0,0,0.5);
+}
+
+/**
+ * Changement de couleur quand le bouton est coché
+ */
+
+.jolicb input[type=checkbox]:checked + label {
+    background: #26f828;
+}
+
+/**
+ * particularité du curseur pour les boutons désactivés
+ **/
+.jolicb input[type=checkbox]:disabled + label {
+    cursor: not-allowed;
+}
+
+/**** infobulles implémentées avec des <span> ****/
+.jolicb {outline:none; }
+
+.jolicb:hover {text-decoration:none;}
+
+.jolicb span {
+    z-index:20; display:none; padding:14px 20px;
+    margin-top:-50px; margin-left:40px;
+    width:80px; line-height:16px; text-align: center;
+    border-radius:14px;        
+    box-shadow: 0px 0px 8px 4px #666;
+    opacity: 0.8;
+}
+
+.jolicb:hover span{
+    display:inline; position:absolute; 
+    border:2px solid #FFF;  color:#fff;
+    background:#333;
+}
+
+.remark {
+    font-size: 70%;
+}
+
+ul.dropdownOptions {
+    list-style-type: circle;
+}
+
+ul.dropdownOptions a {
+    color: blue;
+    text-decoration: none;
+    font-size: 70%;
+}
+
