@@ -151,6 +151,7 @@ input[disabled].btn:hover, input[disabled].btn:active, input[disabled].btn:focus
     opacity: 0.8;
 }
 
+
 .jolicb:hover span{
     display:inline; position:absolute; 
     border:2px solid #FFF;  color:#fff;

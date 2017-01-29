@@ -5,7 +5,8 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.hashers import *
 
-from video.models import Etudiant, Enseignant, estProfesseur
+from .models import Etudiant, Enseignant
+from .ldapUtils import estProfesseur
 
 def index(request):
     return render(request, "preparation.html")

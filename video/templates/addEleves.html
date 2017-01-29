@@ -2,7 +2,7 @@
   <head>
     <title>WebTT : ajout d'élèves</title>
     <link rel="stylesheet" href="/static/video/css/video.css" type="text/css"/>
-    <link rel="stylesheet" href="/static/video/js/jquery-ui/themes/smoothness/jquery-ui.css" type="text/css"/>
+    <link rel="stylesheet" href="/static/video/js/jquery-ui-themes/smoothness/jquery-ui.css" type="text/css"/>
     <script type="text/javascript" src="/static/video/js/jquery/jquery.js">
     </script>
     <script type="text/javascript" src="/static/video/js/jquery-ui/jquery-ui.js">
@@ -17,6 +17,9 @@
 	});
       });
     </script>
+    <style type="text/css">
+      .ui-dialog { z-index: 100; }
+    </style>
   </head>
   <body>
     {% if user.is_superuser %}

@@ -3,23 +3,13 @@ from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 import json
 
-from webtt.settings import connection
-from .models import Etudiant, Enseignant
+from .models import Etudiant, Enseignant, EnseignantClasse
 #from .csvResult import csvResponse
 #from .odfResult import odsResponse, odtResponse
 from collections import OrderedDict
 
-def nomClasse(s):
-    """
-    Correction des noms des classes ;
-    dans notre annuaire, toutes les classes sont préfixées par "c"
-    @param s une chaîne commençant par "c"
-    @return la chaîne sans le préfixe "c"
-    """
-    if s[0]=="c":
-        return s[1:]
-    else:
-        return s
+from .ldapUtils import nomClasse, getAllProfs, getProfs, getEleves, \
+    getClasses, uid2enseignant, ownedClasses
 
 # Create your views here.
 
@@ -37,34 +27,7 @@ def addEleves(request):
     ######################################
     if wantedClasses:
         for gid in wantedClasses:
-            ### récupération du nom de la classe
-            base_dn = 'ou=Groups,dc=lycee,dc=jb'
-            filtre  = '(gidNumber={})'.format(gid)
-            connection.search(
-                search_base = base_dn,
-                search_filter = filtre,
-                attributes=["cn" ]
-                )
-            for entry in connection.response:
-                cn=nomClasse(entry['attributes']['cn'][0])
-            ### récupération des élèves inscrits dans la classe
-            base_dn = 'ou=Users,dc=lycee,dc=jb'
-            filtre  = '(&(objectClass=kwartzAccount)(gidNumber={}))'.format(gid)
-            connection.search(
-                search_base = base_dn,
-                search_filter = filtre,
-                attributes=["uidNumber", "sn", "givenName", "uid" ]
-                )
-            for entry in connection.response:
-                eleves.append(
-                    {
-                        "uidNumber":entry['attributes']['uidNumber'][0],
-                        "uid":entry['attributes']['uid'][0],
-                        "nom":entry['attributes']['sn'][0],
-                        "prenom":entry['attributes']['givenName'][0],
-                        "classe": cn,
-                    }
-                )
+            eleves+=getEleves(gid)
         eleves.sort(key=lambda e: "{classe} {nom} {prenom}".format(**e))
         for e in eleves:
             etudiant=Etudiant.objects.filter(uid=e["uid"])
@@ -74,19 +37,7 @@ def addEleves(request):
                                   nom=e["nom"], prenom=e["prenom"],
                                   classe=e["classe"])
                 etudiant.save()
-    base_dn = 'ou=Groups,dc=lycee,dc=jb'
-    filtre = '(&(cn=c*)(!(cn=*smbadm))(objectclass=kwartzGroup))'
-    connection.search(
-        search_base = base_dn,
-        search_filter = filtre,
-        attributes = ['cn', 'gidnumber'],
-    )
-    classes=[]
-    for entry in connection.response:
-        classes.append({
-            'gid':entry['attributes']['gidNumber'][0],
-            'classe':nomClasse(entry['attributes']['cn'][0]),
-        })
+    classes=getClasses()
     ### Liste des classes déjà connues dans la base de données
     etudiants=list(Etudiant.objects.all())
     classesDansDb=list(set([nomClasse(e.classe) for e in Etudiant.objects.all()]))
@@ -115,3 +66,73 @@ def delClasse(request):
     return JsonResponse({
         "status": "ok",
     })
+
+def addProfs(request):
+    """
+    Une page pour ajouter des profs à un atelier de sous-titrage
+    """
+    profs=getAllProfs()
+    profsAP=Enseignant.objects.all()
+    pClasse=[]
+    for p in profsAP:
+        classes=[ec.classe for ec in EnseignantClasse.objects.filter(enseignant__uid=p.uid)]
+        pClasse.append({"nom": "{} {}".format(p.nom, p.prenom),
+                        "classes": classes,
+                        "uid": p.uid,
+        })
+    return render(
+        request, "addProfs.html",
+        context={
+            "profs":  profs,
+            "profsAP": profsAP,
+            "pClasse": pClasse,
+        }
+    )
+
+def plusProfs(request):
+    ids=eval(request.POST.get("ids"))
+    for id in ids:
+        prof=uid2enseignant(id)
+        if prof:
+            prof.save()
+    return JsonResponse({
+        "status": "ok",
+    })
+    
+def delProf(request):
+    uid=int(request.POST.get("uid"))
+    p=Enseignant.objects.filter(uid=uid)
+    if p:
+        p[0].delete()
+    return JsonResponse({
+        "status": "ok",
+    });
+
+def profClasse(request):
+    uid=int(request.POST.get("uid"))
+    req=request.POST.get("req")
+    if req=="possibles":
+        classes=getClasses()
+        owned=ownedClasses(uid,classes)
+        return JsonResponse({
+            "status": "ok",
+            "classes": classes,
+            "owned": owned,
+        });
+    elif req == "choisis":
+        classes=json.loads(request.POST.get("classes"))
+        owned=[ec.gid for ec in EnseignantClasse.objects.filter(enseignant__uid=uid)]
+        required=[c["gid"] for c in classes]
+        e=Enseignant.objects.filter(uid=uid)[0]
+        ## ajout des classes non encore possédées
+        for c in classes:
+            if c["gid"] not in owned:
+                ec= EnseignantClasse(enseignant=e, classe=c["classe"], gid=c["gid"])
+                ec.save()
+                ## effacement des classe non requises
+        for ec in EnseignantClasse.objects.filter(enseignant__uid=uid):
+            if ec.gid not in required:
+                ec.delete()
+        return JsonResponse({
+            "status": "ok",
+        });

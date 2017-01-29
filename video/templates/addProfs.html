@@ -1,0 +1,63 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>WebTT : ajout de professeurs</title>
+    <link rel="stylesheet" href="/static/video/css/video.css" type="text/css"/>
+    <link rel="stylesheet" href="/static/video/js/jquery-ui-themes/smoothness/jquery-ui.css" type="text/css"/>
+    <script type="text/javascript" src="/static/video/js/jquery/jquery.js">
+    </script>
+    <script type="text/javascript" src="/static/video/js/jquery-ui/jquery-ui.js">
+    </script>
+    <script type="text/javascript" src="/static/video/js/addEleves.js">
+    </script>
+    <style type="text/css">
+      .ui-dialog { z-index: 100; }
+    </style>
+  </head>
+  <body>
+    {% if user.is_superuser %}
+    <ul>
+      <li><a href="/admin/">Administration.</a></li>
+      <li><a href="/preparation/">Préparation des cours, formations, groupes, etc.</a></li>
+    </ul>
+    {% if profsAP %}
+    <h1>WebTT : profs de l'atelier</h1>
+    {% for pc in pClasse %}
+    <div class="profAcocher">
+      {{pc.nom}}<br/>
+      {% for c in pc.classes %}
+      {{c}}<br/>
+      {% endfor %}
+      <button onclick="profClasse({{pc.uid}})">
+	<img src="/static/video/img/plus.png" alt="Ajouter des classes" title="Ajouter des classes" />
+      </button>
+      <button onclick="delProf({{pc.uid}})">
+	<img src="/static/video/img/del.png" alt="Supprimer" title="Supprimer" />
+      </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <h1>WebTT : ajout de professeurs</h1>
+    <form method="post">
+      <fieldset>
+	<legend>Cocher les professeurs à ajouter dans l'atelier de sous-titrage.</legend>
+	<div>
+	  {% if profs %}
+	  {% for p in profs %}
+	  <div class="profAcocher">
+	    <input type="checkbox" id="{{p.uid}}" name="{{p.uid}}"/>
+	    {{p.nom}} {{p.prenom}}
+	  </div>
+	  {% endfor %}
+	  {% endif %}
+	</div>
+	<div id="profAvalider">
+	  {% csrf_token %}
+	  <input type="button" value="Ajouter les professeurs cochés" onclick="ajouteProfs()" />
+	</div>
+      </fieldset>
+    </form>
+    <div id="dialog">
+    </div>
+    {% endif %}
+  </body>
+</html>
